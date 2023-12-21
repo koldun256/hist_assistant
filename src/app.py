@@ -10,4 +10,4 @@ yc_iam_token = os.getenv("YC_IAM_TOKEN")
 telegram_token = os.getenv("TELEGRAM_TOKEN")
 
 gpt = GPTWrapper(yc_folder_id, yc_iam_token)
-TelegramBot(telegram_token)
+TelegramBot(telegram_token, gpt)
