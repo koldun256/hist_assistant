@@ -14,7 +14,7 @@ class TelegramBot:
         self.app.run_polling(allowed_updates=Update.ALL_TYPES)
 
     async def handle_msg(self, update, context):
-        konspekti = await self.hist_engine.gen_konspekti(update.message.text)
+        konspekti = await self.hist_engine.gen_style_konspekti(update.message.text)
 
         await update.message.reply_text(konspekti.replace("**", "*"), parse_mode="markdown")
 

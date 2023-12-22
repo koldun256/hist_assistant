@@ -18,6 +18,8 @@ class GPTWrapper():
         try:
             return json.loads(res.text)["response"]["alternatives"][0]["message"]["text"]
         except:
+            print("not enought time!!!")
+            print(res.text)
             return False
 
     async def async_prompt(self, messages, temperature=0.6, max_tokens=2000, model="yandexgpt"):
