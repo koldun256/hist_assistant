@@ -21,10 +21,10 @@ class TelegramBot:
 #             if self.hist_engine.is_style(msg) \
 #             else self.hist_engine.gen_konspekti(msg)
 #         )
-# 
-#         await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
+        
+        answer = await self.hist_engine.gen_event_konspekti(msg)
 
-        await update.message.reply_text(self.hist_engine.is_person(msg))
+        await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
 
     async def start(self, update, context):
         await update.message.reply_text(start_msg, parse_mode="markdown")

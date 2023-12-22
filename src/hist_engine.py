@@ -57,3 +57,17 @@ class HistEngine():
         ])
 
         return answer
+
+    async def gen_event_konspekti(self, prompt):
+        answer = await self.gpt.async_prompt([
+            {
+                "role": "system",
+                "text": f"Ты хорошо знаешь историю, говоришь только про историю."
+            },
+            {
+                "role": "user",
+                "text": f'Сгенерируй краткий конспект по по теме "Исторические события. {prompt}". Назови дату события, содержание события, причины события, следствия события, деятелей события.'
+            }
+        ])
+
+        return answer
