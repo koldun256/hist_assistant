@@ -18,10 +18,10 @@ class HistEngine():
             self._is_event(theme),
             self._is_style(theme),
         ) 
-        if is_event:
-            return Theme.EVENT
         if is_person:
             return Theme.PERSON
+        if is_event:
+            return Theme.EVENT
         if is_style:
             return Theme.STYLE
         return Theme.GENERAL
@@ -33,6 +33,8 @@ class HistEngine():
                 return await self.gen_event_konspekti(theme)
             case Theme.STYLE:
                 return await self.gen_style_konspekti(theme)
+            case Theme.PERSON:
+                return await self.gen_person_konspekti(theme)
             case Theme.GENERAL:
                 return await self.gen_general_konspekti(theme)
         raise Exception("Unknown theme type")
@@ -112,7 +114,22 @@ class HistEngine():
             },
             {
                 "role": "user",
-                "text": f'Сгенерируй краткий конспект по по теме "История исскуств. {prompt}". Назови основные даты, черты. Напиши 5 самых значимых произведений этого направления.'
+                "text": f'Сгенерируй краткий конспект по теме "История исскуств. {prompt}". Назови основные даты, черты. Напиши 5 самых значимых произведений этого направления.'
+            }
+        ])
+
+        return answer
+
+
+    async def gen_person_konspekti(self, prompt):
+        answer = await self.gpt.async_prompt([
+            {
+                "role": "system",
+                "text": f"Ты хорошо знаешь историю, говоришь только про историю."
+            },
+            {
+                "role": "user",
+                "text": f'Сгенерируй краткий конспект про {prompt}. Назови даты жизни, вид деятельности, основные даты биографии, вклад в историю.'
             }
         ])
 
