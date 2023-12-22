@@ -34,17 +34,12 @@ class TelegramBot:
             answer = await self.konspekti_engine.gen_konspekt(msg)
             await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
         elif self.state == BotState.QUIZ:
-            is_correct, next_question = self.quiz.answer(msg)
+            review, next_question = await self.quiz.answer(msg)
 
-            if is_correct:
-                await update.message.reply_text(f"Правильно")
-            else:
-                await update.message.reply_text(f"Неправильно")
-
-            await update.message.reply_text(f"Ваши баллы: {self.quiz.points}")
+            await update.message.reply_text(review)
 
             if next_question is None:
-                await update.message.reply_text("Конец")
+                await update.message.reply_text("Конец квиза")
                 self.state = BotState.KONSPEKTI
             else:
                 await update.message.reply_text(next_question.text)

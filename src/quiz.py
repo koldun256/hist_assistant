@@ -1,16 +1,27 @@
 class Question():
-    def __init__(self, topic, text):
+    def __init__(self, gpt, topic, text):
         self.topic = topic
         self.text = text
+        self.gpt = gpt
 
     
-    def test_answer(self, answer):
-        return answer != "Нет"
+    async def test_answer(self, answer):
+        review = await self.gpt.async_prompt([
+            {
+                "role": "system",
+                "text": "Представь что ты проверяешь тест по истории"
+            },
+            {
+                "role": "user",
+                "text": f'Является ли ответ "{answer}" на вопрос "{self.text}" правильным? Оцени ответ. В случае неправильного ответа укажи правильный.'
+            }
+        ])
+
+        return review
 
 
 class Quiz():
     current_question = None
-    points = 0
 
 
     def __init__(self, gpt, topic):
@@ -33,20 +44,21 @@ class Quiz():
             },
             {
                 "role": "user",
-                "text": f'Сгенерируй три вопроса по теме {topic}.'
+                "text": f'Сгенерируй пять вопросов по теме {topic}.'
             }
         ], timeout=4)
-        print(questions)
-        return [Question(self.topic, question) for question in questions.split('\n')]
+
+        return [Question(self.gpt, self.topic, question) \
+                for question \
+                in questions.split('\n') \
+                if len(question) > 2]
 
 
-    def answer(self, answer_text):
-        correct = self.current_question.test_answer(answer_text)
-        if correct:
-            self.points += 1
+    async def answer(self, answer_text):
+        review = await self.current_question.test_answer(answer_text)
 
         if len(self.questions) == 0:
-            return correct, None
+            return review, None
 
         self.current_question = self.questions.pop(0)
-        return correct, self.current_question
+        return review, self.current_question
