@@ -1,7 +1,7 @@
 from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
-start_msg = """Это бот который генерирует конспекты по истории
+start_msg = """Это бот, который генерирует конспекты по истории
 Просто введите тему билета"""
 
 class TelegramBot:
@@ -13,16 +13,18 @@ class TelegramBot:
         self.app.run_polling(allowed_updates=Update.ALL_TYPES)
 
     async def gen_answer(self, update, context):
-        answer = self.gpt.prompt([
+        print(update.message.text)
+        answer = await self.gpt.async_prompt([
             {
                 "role": "system",
-                "text": "Ты учитель истории, который даёт конспекты по заданным темам"
+                "text": f"Ты хорошо знаешь историю, говоришь только про историю."
             },
             {
                 "role": "user",
-                "text": update.message.text
+                "text": f"Сгенерируй краткий конспект по истории по теме {update.message.text}. Назови основные даты, деятелей и черты."
             }
         ])
+
         await update.message.reply_text(answer)
 
     async def start(self, update, context):
