@@ -22,7 +22,7 @@ class GPTWrapper():
             print(res.text)
             return False
 
-    async def async_prompt(self, messages, temperature=0.6, max_tokens=2000, model="yandexgpt"):
+    async def async_prompt(self, messages, temperature=0.6, max_tokens=2000, model="yandexgpt", timeout=10):
         req_url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completionAsync"
 
         req_payload = {
@@ -42,7 +42,7 @@ class GPTWrapper():
         }
 
         res = requests.post(req_url, json=req_payload, headers=req_headers)
-        time.sleep(10)
+        time.sleep(timeout)
         req_id = json.loads(res.text)["id"]
         return self.get_async_result(req_id)
 
