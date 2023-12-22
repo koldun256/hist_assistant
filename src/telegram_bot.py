@@ -50,8 +50,11 @@ class TelegramBot:
 
 
     async def quiz(self, update, context):
+        if len(context.args) == 0:
+            await update.message.reply_text("Использование: /quiz <тема_квиза>")
+            return
         await update.message.reply_text("Начало квиза")
         self.state = BotState.QUIZ
-        self.quiz = Quiz(self.gpt, "История исскуств. Барокко.")
+        self.quiz = Quiz(self.gpt, " ".join(context.args))
         first_question = await self.quiz.begin()
         await update.message.reply_text(first_question)

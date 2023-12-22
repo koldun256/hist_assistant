@@ -1,8 +1,16 @@
+import re
+def parse_question(question):
+    opening_par = question.rfind("(")
+    closing_par = question.rfind(")")
+    return question[:opening_par] + "?", question[opening_par + 1:closing_par]
+
 class Question():
-    def __init__(self, gpt, topic, text):
+    def __init__(self, gpt, topic, text, right_answer):
         self.topic = topic
         self.text = text
         self.gpt = gpt
+        print(text, right_answer)
+        self.right_answer = right_answer
 
     
     async def test_answer(self, answer):
@@ -12,8 +20,16 @@ class Question():
                 "text": "Представь что ты проверяешь тест по истории"
             },
             {
+                "role": "system",
+                "text": f'Был задан вопрос "{self.text}"'
+            },
+            {
+                "role": "system",
+                "text": f'Правильный ответ "{self.right_answer}"'
+            },
+            {
                 "role": "user",
-                "text": f'Является ли ответ "{answer}" на вопрос "{self.text}" правильным? Оцени ответ. В случае неправильного ответа укажи правильный.'
+                "text": f'Является ли ответ "{answer}" верным? Прокомментируй ответ. Укажи правильный ответ.'
             }
         ])
 
@@ -44,13 +60,13 @@ class Quiz():
             },
             {
                 "role": "user",
-                "text": f'Сгенерируй пять вопросов по теме {topic}.'
+                "text": f'Сгенерируй пять вопросов по теме {topic}. После каждого вопроса в скобках укажи правильный ответ.'
             }
         ], timeout=4)
 
-        return [Question(self.gpt, self.topic, question) \
-                for question \
-                in questions.split('\n') \
+        return [Question(self.gpt, self.topic, question, answer) \
+                for (question, answer) \
+                in map(parse_question, questions.split('\n')) \
                 if len(question) > 2]
 
 
