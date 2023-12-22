@@ -25,7 +25,7 @@ class TelegramBot:
             }
         ])
 
-        await update.message.reply_text(answer)
+        await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
 
     async def start(self, update, context):
-        await update.message.reply_text(start_msg)
+        await update.message.reply_text(start_msg, parse_mode="markdown")
