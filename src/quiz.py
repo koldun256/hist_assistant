@@ -2,7 +2,9 @@ import re
 def parse_question(question):
     opening_par = question.rfind("(")
     closing_par = question.rfind(")")
-    return question[:opening_par] + "?", question[opening_par + 1:closing_par]
+    question_txt = re.search(r"^\d\.\s(.*?)\s?\??$", question[:opening_par]).group(1)
+    answer_txt = question[opening_par + 1:closing_par]
+    return question_txt + "?", answer_txt
 
 class Question():
     def __init__(self, gpt, topic, text, right_answer):
@@ -64,11 +66,14 @@ class Quiz():
             }
         ], timeout=4)
 
-        return [Question(self.gpt, self.topic, question, answer) \
-                for (question, answer) \
-                in map(parse_question, questions.split('\n')) \
-                if len(question) > 2]
+        result = []
 
+        for question in questions.split("\n"):
+            if re.match(r"^\d\..*", question):
+                question_txt, answer_txt = parse_question(question)
+                result.append(Question(self.gpt, self.topic, question_txt, answer_txt))
+
+        return result
 
     async def answer(self, answer_text):
         review = await self.current_question.test_answer(answer_text)
