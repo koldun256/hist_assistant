@@ -30,6 +30,20 @@ class HistEngine():
 
         return 'да' in answer or 'Да' in answer
     
+    def is_event(self, text):
+        answer = self.gpt.sync_prompt([
+            {
+                "role": "system",
+                "text": 'Ты разбираешься в истории. Ты отвечаешь на вопрос только "да" или "нет".'
+            },
+            {
+                "role": "user",
+                "text": f'"{text}" - это историческое событие? Ответь да или нет.'
+            }
+        ], max_tokens = 10)
+
+        return 'да' in answer or 'Да' in answer
+
     async def gen_style_konspekti(self, prompt):
         answer = await self.gpt.async_prompt([
             {

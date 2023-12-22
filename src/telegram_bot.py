@@ -16,13 +16,15 @@ class TelegramBot:
     async def handle_msg(self, update, context):
         msg = update.message.text
         
-        answer = await (
-            self.hist_engine.gen_style_konspekti(msg) \
-            if self.hist_engine.is_style(msg) \
-            else self.hist_engine.gen_konspekti(msg)
-        )
+#         answer = await (
+#             self.hist_engine.gen_style_konspekti(msg) \
+#             if self.hist_engine.is_style(msg) \
+#             else self.hist_engine.gen_konspekti(msg)
+#         )
+# 
+#         await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
 
-        await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
+        await update.message.reply_text(self.hist_engine.is_person(msg))
 
     async def start(self, update, context):
         await update.message.reply_text(start_msg, parse_mode="markdown")
