@@ -15,7 +15,7 @@ class TelegramBot:
 
     async def handle_msg(self, update, context):
         msg = update.message.text
-        answer = await self.hist_engine.gen_konspekti(msg)        
+        answer = await self.hist_engine.gen_konspekti(msg)
 
         await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
 
