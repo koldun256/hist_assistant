@@ -27,5 +27,19 @@ class TelegramBot:
 
         await update.message.reply_text(answer.replace("**", "*"), parse_mode="markdown")
 
+    def is_style(self, text):
+        answer = self.gpt.sync_prompt([
+            {
+                "role": "system",
+                "text": 'Ты разбираешься в истории искусств. Ты отвечаешь на вопрос только "да" или "нет".'
+            },
+            {
+                "role": "user",
+                "text": f'Существует ли направление в живописи "{text}"? Ответь да или нет.'
+            }
+        ], max_tokens = 10)
+
+        return 'да' in answer or 'Да' in answer
+
     async def start(self, update, context):
         await update.message.reply_text(start_msg, parse_mode="markdown")

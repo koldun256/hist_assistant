@@ -44,7 +44,7 @@ class GPTWrapper():
         req_id = json.loads(res.text)["id"]
         return self.get_async_result(req_id)
 
-    def sync_prompt(self, messages, temperature=0.6, max_tokens=2000, model="yandexgpt-light"):
+    def sync_prompt(self, messages, temperature=0.6, max_tokens=2000, model="yandexgpt-lite"):
         req_url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
 
         req_payload = {
@@ -64,5 +64,6 @@ class GPTWrapper():
         }
 
         res = requests.post(req_url, json=req_payload, headers=req_headers)
-        return json.loads(res.text)["response"]["alternatives"][0]["message"]["text"]
+        print(res.text)
+        return json.loads(res.text)["result"]["alternatives"][0]["message"]["text"]
 
