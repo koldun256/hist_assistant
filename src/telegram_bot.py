@@ -14,6 +14,7 @@ class TelegramBot:
         self.app = Application.builder().token(token).build()
         self.app.add_handler(CommandHandler("start", self.start))
         self.app.add_handler(CommandHandler("quiz", self.quiz))
+        self.app.add_handler(CommandHandler("exit_quiz", self.exit_quiz))
         self.app.add_handler(CommandHandler("konspekti", self.konspekti))
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_msg))
         self.gpt = gpt
@@ -47,12 +48,20 @@ class TelegramBot:
             if next_question is None:
                 await update.message.reply_text("Конец квиза")
                 chat.state = ChatState.MENU
+                chat.quiz = None
             else:
                 await update.message.reply_text(f"Вопрос {5 - len(chat.quiz.questions)}. {next_question.text}")
 
 
     async def start(self, update, context):
-        await update.message.reply_text(start_msg, parse_mode="markdown")
+        await update.message.reply_text(start_msg)
+
+    
+    async def exit_quiz(self, update, context):
+        chat = self.chat_db.get(update.message.chat_id)
+        chat.quiz = None
+        chat.state = ChatState.MENU
+        await update.message.reply_text("Конец квиза")
 
 
     async def quiz(self, update, context):
