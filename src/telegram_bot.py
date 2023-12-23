@@ -5,22 +5,32 @@ from chats import ChatDB, ChatState
 from enum import Enum
 from quiz import Quiz
 
-start_msg = """Это бот, который генерирует конспекты по истории
-Просто введите тему билета"""
+help_msg = """Савелий -- бот, который поможет тебе подготовится к экзамену по истории.
+Он умеет генерировать конспекты и тестировать твои знания.
+Список доступных команд:
+/help -- вывести это сообщение
+/konspekti <тема конспекта> -- сгенерировать конспект на заданную тему
+/quiz <тема квиза> -- проверить свои знания по заданной теме
+/exit_quiz -- прервать квиз"""
 
 
 class TelegramBot:
     def __init__(self, token, gpt):
         self.app = Application.builder().token(token).build()
-        self.app.add_handler(CommandHandler("start", self.start))
+        self.app.add_handler(CommandHandler("start", self.help))
         self.app.add_handler(CommandHandler("quiz", self.quiz))
         self.app.add_handler(CommandHandler("exit_quiz", self.exit_quiz))
         self.app.add_handler(CommandHandler("konspekti", self.konspekti))
+        self.app.add_handler(CommandHandler("help", self.help))
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_msg))
         self.gpt = gpt
         self.chat_db = ChatDB()
         self.konspekti_engine = KonspektiEngine(gpt)
         self.app.run_polling(allowed_updates=Update.ALL_TYPES)
+
+
+    async def help(self, update, context):
+        await update.message.reply_text(help_msg)
 
 
     async def konspekti(self, update, context):
@@ -41,7 +51,7 @@ class TelegramBot:
         msg = update.message.text
         chat = self.chat_db.get(update.message.chat_id)
         if chat.state == ChatState.MENU:
-            await update.message.reply_text("Введи команду")
+            await update.message.reply_text("/help -- вывод справки")
         elif chat.state == ChatState.QUIZ:
             zadumalsya = await update.message.reply_text("Савелий задумался...")
             review, next_question = await chat.quiz.answer(msg)
@@ -55,10 +65,6 @@ class TelegramBot:
             else:
                 await update.message.reply_text(f"Вопрос {5 - len(chat.quiz.questions)}. {next_question.text}")
             await zadumalsya.delete()
-
-
-    async def start(self, update, context):
-        await update.message.reply_text(start_msg)
 
     
     async def exit_quiz(self, update, context):
