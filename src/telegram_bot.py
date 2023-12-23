@@ -40,7 +40,7 @@ class TelegramBot:
         if chat.state == ChatState.MENU:
             await update.message.reply_text("Введи команду")
         elif chat.state == ChatState.QUIZ:
-            review, next_question = await self.quiz.answer(msg)
+            review, next_question = await chat.quiz.answer(msg)
 
             await update.message.reply_text(review)
 
@@ -48,7 +48,7 @@ class TelegramBot:
                 await update.message.reply_text("Конец квиза")
                 chat.state = ChatState.MENU
             else:
-                await update.message.reply_text(next_question.text)
+                await update.message.reply_text(f"Вопрос {5 - len(chat.quiz.questions)}. {next_question.text}")
 
 
     async def start(self, update, context):
@@ -62,6 +62,6 @@ class TelegramBot:
         chat = self.chat_db.get(update.message.chat_id)
         await update.message.reply_text("Начало квиза")
         chat.state = ChatState.QUIZ
-        self.quiz = Quiz(self.gpt, " ".join(context.args))
-        first_question = await self.quiz.begin()
-        await update.message.reply_text(first_question)
+        chat.quiz = Quiz(self.gpt, " ".join(context.args))
+        first_question = await chat.quiz.begin()
+        await update.message.reply_text(f"Вопрос {5 - len(chat.quiz.questions)}. {first_question}")
