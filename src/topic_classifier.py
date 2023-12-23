@@ -37,7 +37,7 @@ class TopicClassifier():
                 "role": "user",
                 "text": f'"{text}" - это культурное течение? Ответь да или нет.'
             }
-        ], max_tokens = 10, model="yandexgpt-lite", timeout=2)
+        ], max_tokens = 10, model="yandexgpt-lite")
 
         print("Is Style: ", answer)
 
@@ -54,7 +54,7 @@ class TopicClassifier():
                 "role": "user",
                 "text": f'"{text}" - это историческое событие? Ответь да или нет.'
             }
-        ], max_tokens=10, model="yandexgpt-lite", timeout=2)
+        ], max_tokens=10, model="yandexgpt-lite")
 
         print("Is Event: ", answer)
 
@@ -71,7 +71,7 @@ class TopicClassifier():
                 "role": "user",
                 "text": f'"{text}" - это исторический деятель? Ответь да или нет.'
             }
-        ], max_tokens=10, model="yandexgpt-lite", timeout=2)
+        ], max_tokens=10, model="yandexgpt-lite")
 
         print("Is Person: ", answer)
 
