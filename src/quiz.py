@@ -4,7 +4,9 @@ def parse_question(question):
     closing_par = question.rfind(")")
     question_txt = re.search(r"^\d\.\s(.*?)\s?\??$", question[:opening_par]).group(1)
     answer_txt = question[opening_par + 1:closing_par]
-    return question_txt + "?", answer_txt
+    if '?' not in question_txt:
+        question_txt += "?"
+    return question_txt, answer_txt
 
 class Question():
     def __init__(self, gpt, topic, text, right_answer):
